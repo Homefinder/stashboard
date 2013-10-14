@@ -493,6 +493,10 @@ class EventTweetHandler(webapp.RequestHandler):
 class EventHipchatHandler(webapp.RequestHandler):
     def post(self):
 
+        if not (settings.HIPCHAT_API_KEY):
+            logging.error('HipChat credentials not configured properly in settings.py')
+            return
+
         status_color_map = {'Up': 'green', 'Warning': 'yellow', 'Down': 'red'}
 
         service_name = self.request.get('service_name')
@@ -505,7 +509,7 @@ class EventHipchatHandler(webapp.RequestHandler):
             return
 
         try:
-            hipster = hipchat.HipChat(token='e7a1310921ddca4bd188d2b36e1059')
+            hipster = hipchat.HipChat(token=settings.HIPCHAT_API_KEY)
             disp_message = '<b>[%s] %s</b><br/> %s' % (status_name, service_name, message)
             resp = hipster.method(url='rooms/message', method='POST',
                 parameters={'room_id': 310850, 'from': 'HF Stausboard',
