@@ -16,6 +16,7 @@ TWITTER_HANDLE = ''
 
 # Hipchat settings
 HIPCHAT_API_KEY = ''
+HIPCHAT_ROOM_ID = ''
 
 # RSS Feed settings
 RSS_NUM_EVENTS_TO_FETCH = 50
