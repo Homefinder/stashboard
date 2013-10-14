@@ -95,6 +95,7 @@ ADMIN = [
     (r'/admin/oauth/verify', admin.OAuthVerifyHandler),
     (r'/admin/tasks/invalidate-cache', admin.InvalidateCacheHandler),
     (r'/admin/tweet', admin.EventTweetHandler),
+    (r'/admin/hipchat', admin.EventHipchatHandler),
     (r'/admin', admin.RootHandler),
     ]
 

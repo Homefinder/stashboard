@@ -18,6 +18,7 @@ from utils import slugify
 import oauth2 as oauth
 import socket
 import urllib
+import hipchat
 
 def default_template_data():
     td = site.default_template_data()
@@ -488,6 +489,38 @@ class EventTweetHandler(webapp.RequestHandler):
                 logging.error('Tweet failed: %s' % resp)
         except socket.timeout:
             logging.error('Unable to post to Twitter API.')
+
+class EventHipchatHandler(webapp.RequestHandler):
+    def post(self):
+
+        status_color_map = {'Up': 'green', 'Warning': 'yellow', 'Down': 'red'}
+
+        service_name = self.request.get('service_name')
+        status_name = self.request.get('status_name')
+        status_color = status_color_map[status_name]
+        message = self.request.get('message')
+
+        if not service_name or not status_name or not message:
+            logging.error('Internal Hipchat endpoint not called correctly')
+            return
+
+        try:
+            hipster = hipchat.HipChat(token='e7a1310921ddca4bd188d2b36e1059')
+            disp_message = '<b>[%s] %s</b><br/> %s' % (status_name, service_name, message)
+            resp = hipster.method(url='rooms/message', method='POST',
+                parameters={'room_id': 310850, 'from': 'HF Stausboard',
+                  'message': disp_message, 'color': status_color,
+                  'notify': 1}
+                )
+
+            #logging.info(resp)
+
+            if resp['status'] == 'sent':
+                logging.info('Hipchat successful: [%s - %s] %s' % (service_name, status_name, message))
+            else:
+                logging.error('Hipchat failed: %s' % resp)
+        except socket.timeout:
+            logging.error('Unable to post to Hipchat API.')
 
 
 class InvalidateCacheHandler(site.BaseHandler):

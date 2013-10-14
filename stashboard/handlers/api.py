@@ -399,6 +399,10 @@ class EventsListHandler(restful.Controller):
             logging.info('Attempting to post a tweet for the latest event via async GAE task queue.')
             taskqueue.add(url='/admin/tweet', params={'service_name': service.name, 'status_name': status.name, 'message': message})
 
+        #TODO - insert Hipchat notification here
+        logging.info('*** Sending update to Hipchat room')
+        taskqueue.add(url='/admin/hipchat', params={'service_name': service.name, 'status_name': status.name, 'message': message})
+
         invalidate_cache()
         self.json(e.rest(self.base_url(version)))
 
